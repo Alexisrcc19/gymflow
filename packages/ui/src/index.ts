@@ -1,3 +1,5 @@
+export { Badge } from './components/badge/badge';
+export type { BadgeProps } from './components/badge/badge';
 export { Button } from './components/button/button';
 export type { ButtonProps } from './components/button/button';
 export { Checkbox } from './components/checkbox/checkbox';
