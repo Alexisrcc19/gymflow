@@ -5,7 +5,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.@(mdx|stories.@(js|jsx|ts|tsx))'],
-  addons: [],
+  addons: [getAbsolutePath('@storybook/addon-docs')],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {
@@ -13,6 +13,9 @@ const config: StorybookConfig = {
         viteConfigPath: 'vite.config.mts',
       },
     },
+  },
+  docs: {
+    defaultName: 'Docs',
   },
 };
 
