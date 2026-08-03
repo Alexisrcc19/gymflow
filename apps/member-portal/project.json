@@ -1,0 +1,9 @@
+{
+  "name": "member-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/member-portal",
+  "projectType": "application",
+  "tags": ["scope:member", "type:app"],
+  "// targets": "to see all targets run: nx show project member-portal --web",
+  "targets": {}
+}
