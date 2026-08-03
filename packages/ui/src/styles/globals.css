@@ -1,0 +1,50 @@
+@import '@fontsource-variable/sora';
+@import '@fontsource-variable/manrope';
+@import 'tailwindcss';
+@import './tokens.css';
+
+@source '../';
+
+@theme inline {
+  --color-background: var(--gymflow-color-background);
+  --color-surface: var(--gymflow-color-surface);
+  --color-foreground: var(--gymflow-color-foreground);
+  --color-muted-foreground: var(--gymflow-color-muted-foreground);
+  --color-border: var(--gymflow-color-border);
+  --color-primary: var(--gymflow-color-primary);
+  --color-primary-soft: var(--gymflow-color-primary-soft);
+  --color-success: var(--gymflow-color-success);
+  --color-warning: var(--gymflow-color-warning);
+  --color-danger: var(--gymflow-color-danger);
+  --color-info: var(--gymflow-color-info);
+
+  --font-display: var(--gymflow-font-display);
+  --font-sans: var(--gymflow-font-body);
+
+  --radius-sm: var(--gymflow-radius-sm);
+  --radius-md: var(--gymflow-radius-md);
+  --radius-lg: var(--gymflow-radius-lg);
+
+  --shadow-rest: var(--gymflow-shadow-rest);
+  --shadow-raised: var(--gymflow-shadow-raised);
+  --shadow-overlay: var(--gymflow-shadow-overlay);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--gymflow-color-border);
+  }
+
+  body {
+    background: var(--gymflow-color-background);
+    color: var(--gymflow-color-foreground);
+    font-family: var(--gymflow-font-body);
+  }
+
+  :focus-visible {
+    outline: var(--gymflow-focus-ring-width) solid var(--gymflow-color-primary);
+    outline-offset: var(--gymflow-focus-ring-offset);
+  }
+}

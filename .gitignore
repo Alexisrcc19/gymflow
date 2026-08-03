@@ -66,3 +66,6 @@ test-output
 
 # Local planning documentation
 docs/
+
+storybook-static
+vitest.config.*.timestamp*

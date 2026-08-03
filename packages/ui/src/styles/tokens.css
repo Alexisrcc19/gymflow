@@ -1,0 +1,29 @@
+:root {
+  --gymflow-color-background: #f8f7f4;
+  --gymflow-color-surface: #ffffff;
+  --gymflow-color-foreground: #1f2933;
+  --gymflow-color-muted-foreground: #6b7580;
+  --gymflow-color-border: #e3e1dc;
+  --gymflow-color-primary: #2a7f7b;
+  --gymflow-color-primary-soft: #e7f2f0;
+  --gymflow-color-success: #2f8f5b;
+  --gymflow-color-warning: #b5811f;
+  --gymflow-color-danger: #c0433b;
+  --gymflow-color-info: #2f6fb5;
+
+  --gymflow-font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  --gymflow-font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --gymflow-radius-sm: 0.25rem;
+  --gymflow-radius-md: 0.375rem;
+  --gymflow-radius-lg: 0.5rem;
+
+  --gymflow-shadow-rest: 0 1px 2px rgb(31 41 51 / 6%);
+  --gymflow-shadow-raised:
+    0 1px 3px rgb(31 41 51 / 8%), 0 1px 2px rgb(31 41 51 / 4%);
+  --gymflow-shadow-overlay:
+    0 8px 24px rgb(31 41 51 / 12%), 0 2px 4px rgb(31 41 51 / 4%);
+
+  --gymflow-focus-ring-width: 2px;
+  --gymflow-focus-ring-offset: 2px;
+}
