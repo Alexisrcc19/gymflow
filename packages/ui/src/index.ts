@@ -1,6 +1,12 @@
 export { Button } from './components/button/button';
 export type { ButtonProps } from './components/button/button';
+export { Checkbox } from './components/checkbox/checkbox';
+export type { CheckboxProps } from './components/checkbox/checkbox';
 export { Input } from './components/input/input';
 export type { InputProps } from './components/input/input';
 export { Label } from './components/label/label';
 export type { LabelProps } from './components/label/label';
+export { Select } from './components/select/select';
+export type { SelectProps } from './components/select/select';
+export { Textarea } from './components/textarea/textarea';
+export type { TextareaProps } from './components/textarea/textarea';
