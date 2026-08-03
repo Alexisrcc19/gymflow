@@ -2,7 +2,15 @@
   "name": "@gymflow/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx run-many -t build",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "format:check": "prettier --check .",
+    "lint": "nx run-many -t lint",
+    "prepare": "husky",
+    "test": "nx run-many -t test",
+    "typecheck": "nx run-many -t typecheck"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -34,9 +42,11 @@
     "eslint-plugin-jsx-a11y": "6.10.1",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "5.0.0",
+    "husky": "^9.1.7",
     "jest": "~30.3.0",
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
+    "lint-staged": "^17.3.0",
     "nx": "23.1.0",
     "prettier": "^3.8.1",
     "ts-jest": "^29.4.7",
@@ -57,6 +67,13 @@
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css,scss}": "prettier --write"
   },
   "packageManager": "pnpm@11.18.0"
 }
