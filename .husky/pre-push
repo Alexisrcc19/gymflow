@@ -1,1 +1,1 @@
-pnpm check
+pnpm nx affected -t lint typecheck test --base=HEAD~1 --head=HEAD
