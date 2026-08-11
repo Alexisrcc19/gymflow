@@ -1,5 +1,6 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
+const { dependencies } = require('./package.json');
 
 module.exports = {
   output: {
@@ -18,6 +19,7 @@ module.exports = {
       assets: ['./src/assets'],
       optimization: false,
       outputHashing: 'none',
+      externalDependencies: Object.keys(dependencies),
       generatePackageJson: false,
       sourceMap: true,
     }),

@@ -11,6 +11,7 @@ swcJestConfig.swcrc = false;
 module.exports = {
   displayName: 'api',
   preset: '../../jest.preset.js',
+  setupFiles: ['reflect-metadata'],
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],
