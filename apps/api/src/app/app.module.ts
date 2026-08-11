@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { validateEnvironment } from '../config/environment';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../infrastructure/database/prisma.module';
+import { MembersModule } from '../members/members.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PrismaModule } from '../infrastructure/database/prisma.module';
     ]),
     PrismaModule,
     AuthModule,
+    MembersModule,
     HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
