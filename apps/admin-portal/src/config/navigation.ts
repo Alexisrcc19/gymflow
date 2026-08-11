@@ -21,18 +21,18 @@ export interface NavigationSectionConfig {
 
 export const navigationSections: NavigationSectionConfig[] = [
   {
-    label: 'Operations',
+    label: 'Operaciones',
     items: [
-      { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/members', icon: Users, label: 'Members' },
-      { href: '/classes', icon: CalendarDays, label: 'Classes' },
-      { href: '/trainers', icon: UserRoundCog, label: 'Trainers' },
-      { href: '/memberships', icon: CreditCard, label: 'Memberships' },
+      { href: '/', icon: LayoutDashboard, label: 'Panel' },
+      { href: '/members', icon: Users, label: 'Miembros' },
+      { href: '/classes', icon: CalendarDays, label: 'Clases' },
+      { href: '/trainers', icon: UserRoundCog, label: 'Entrenadores' },
+      { href: '/memberships', icon: CreditCard, label: 'Membresías' },
     ],
   },
   {
-    label: 'Workspace',
-    items: [{ href: '/settings', icon: Settings, label: 'Settings' }],
+    label: 'Sistema',
+    items: [{ href: '/settings', icon: Settings, label: 'Configuración' }],
   },
 ];
 

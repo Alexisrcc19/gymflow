@@ -24,9 +24,9 @@ export function MembershipStatus() {
   return (
     <Card>
       <CardHeader className="border-b border-border">
-        <CardTitle>Membership status</CardTitle>
+        <CardTitle>Estado de membresías</CardTitle>
         <CardDescription>
-          Distribution across {total.toLocaleString('en-US')} members
+          Distribución entre {total.toLocaleString('es-EC')} miembros
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6 pt-6 sm:grid-cols-2 sm:items-center xl:grid-cols-1 2xl:grid-cols-2">

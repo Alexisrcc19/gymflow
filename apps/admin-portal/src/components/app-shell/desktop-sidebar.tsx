@@ -20,7 +20,7 @@ export function DesktopSidebar() {
       </div>
 
       <nav
-        aria-label="Primary navigation"
+        aria-label="Navegación principal"
         className="flex-1 space-y-7 overflow-y-auto px-3 py-6"
       >
         {navigationSections.map((section) => (

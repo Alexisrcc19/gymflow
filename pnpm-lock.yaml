@@ -228,6 +228,9 @@ importers:
 
   apps/admin-portal:
     dependencies:
+      '@gymflow/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
       '@gymflow/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -325,6 +328,9 @@ importers:
 
   apps/member-portal:
     dependencies:
+      '@gymflow/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
       '@gymflow/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -337,6 +343,12 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.8(react@19.2.8)
+
+  packages/auth-client:
+    dependencies:
+      '@gymflow/ui':
+        specifier: workspace:*
+        version: link:../ui
 
   packages/ui:
     dependencies:

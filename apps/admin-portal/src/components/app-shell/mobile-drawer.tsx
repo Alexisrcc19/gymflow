@@ -22,13 +22,13 @@ export function MobileDrawer({ onClose, open }: MobileDrawerProps) {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       <button
-        aria-label="Close navigation"
+        aria-label="Cerrar navegación"
         className="absolute inset-0 bg-foreground/35"
         onClick={onClose}
         type="button"
       />
       <aside
-        aria-label="Mobile navigation"
+        aria-label="Navegación móvil"
         aria-modal="true"
         className="relative flex h-full w-4/5 max-w-sm flex-col bg-surface shadow-overlay"
         role="dialog"
@@ -36,7 +36,7 @@ export function MobileDrawer({ onClose, open }: MobileDrawerProps) {
         <div className="flex h-16 items-center justify-between border-b border-border px-5">
           <Brand />
           <Button
-            aria-label="Close navigation"
+            aria-label="Cerrar navegación"
             autoFocus
             onClick={onClose}
             size="icon"

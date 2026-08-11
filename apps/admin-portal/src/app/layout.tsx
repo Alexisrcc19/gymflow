@@ -2,14 +2,15 @@ import './global.css';
 
 import type { Metadata, Viewport } from 'next';
 
-import { AdminShell } from '../components/app-shell/admin-shell';
+import { AdminAuth } from '../components/auth/portal-auth';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Dashboard | GymFlow',
+    default: 'Panel de control | GymFlow',
     template: '%s | GymFlow',
   },
-  description: 'GymFlow administration portal for daily gym operations.',
+  description:
+    'Portal administrativo de GymFlow para la operación diaria del gimnasio.',
 };
 
 export const viewport: Viewport = {
@@ -23,9 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body>
-        <AdminShell>{children}</AdminShell>
+        <AdminAuth>{children}</AdminAuth>
       </body>
     </html>
   );

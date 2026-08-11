@@ -33,25 +33,25 @@ export function AttendanceChart() {
     <Card className="min-w-0 xl:col-span-2">
       <CardHeader className="flex grid-cols-none flex-row flex-wrap items-start justify-between gap-4 border-b border-border">
         <div>
-          <CardTitle>Attendance trend</CardTitle>
+          <CardTitle>Tendencia de asistencias</CardTitle>
           <CardDescription>
-            Daily check-ins and class attendance
+            Registros diarios y asistencia a clases
           </CardDescription>
         </div>
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-primary" />
-            Check-ins
+            Registros
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-success" />
-            Classes
+            Clases
           </span>
         </div>
       </CardHeader>
       <CardContent className="pt-5">
         <svg
-          aria-label="Attendance rises from 270 on Monday to 389 on Friday, then decreases to 174 on Sunday."
+          aria-label="Las asistencias suben de 270 el lunes a 389 el viernes y luego bajan a 174 el domingo."
           className="h-auto w-full overflow-visible"
           role="img"
           viewBox={`-35 0 ${width + 45} ${height}`}
