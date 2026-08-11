@@ -31,6 +31,9 @@ export class EnvironmentVariables {
   @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   SWAGGER_ENABLED!: boolean;
+
+  @IsString()
+  DATABASE_URL!: string;
 }
 
 const defaults: Record<keyof EnvironmentVariables, unknown> = {
@@ -38,6 +41,8 @@ const defaults: Record<keyof EnvironmentVariables, unknown> = {
   PORT: 3333,
   CORS_ORIGINS: 'http://localhost:4200',
   SWAGGER_ENABLED: true,
+  DATABASE_URL:
+    'postgresql://gymflow:gymflow_dev@localhost:5433/gymflow?schema=public',
 };
 
 export function validateEnvironment(

@@ -66,6 +66,9 @@ Thumbs.db
 /CLAUDE.md
 /opencode.json
 
+# Prisma Client
+/apps/api/src/generated/prisma/
+
 # Next.js
 .next
 out

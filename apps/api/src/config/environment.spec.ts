@@ -11,6 +11,8 @@ describe('environment configuration', () => {
       PORT: 3333,
       CORS_ORIGINS: 'http://localhost:4200',
       SWAGGER_ENABLED: true,
+      DATABASE_URL:
+        'postgresql://gymflow:gymflow_dev@localhost:5433/gymflow?schema=public',
     });
   });
 
