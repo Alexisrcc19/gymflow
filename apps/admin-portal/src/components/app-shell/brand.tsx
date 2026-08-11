@@ -11,7 +11,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
           <p className="truncate font-display text-sm font-semibold text-foreground">
             GymFlow
           </p>
-          <p className="text-xs text-muted-foreground">Admin Portal</p>
+          <p className="text-xs text-muted-foreground">Portal Administrativo</p>
         </div>
       ) : null}
     </div>

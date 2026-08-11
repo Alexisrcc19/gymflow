@@ -10,7 +10,7 @@ export function MobileNavigation() {
 
   return (
     <nav
-      aria-label="Mobile primary navigation"
+      aria-label="Navegación principal móvil"
       className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       {mobileNavigationItems.map(({ href, icon: Icon, label }) => {

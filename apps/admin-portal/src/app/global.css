@@ -1,6 +1,7 @@
 @import '@gymflow/ui/styles.css';
 
 @source '../';
+@source '../../../../packages/auth-client/src';
 
 html {
   min-width: 320px;

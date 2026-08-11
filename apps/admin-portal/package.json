@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@gymflow/auth-client": "workspace:*",
     "@gymflow/ui": "workspace:*",
     "lucide-react": "^1.28.0",
     "next": "~16.1.6",

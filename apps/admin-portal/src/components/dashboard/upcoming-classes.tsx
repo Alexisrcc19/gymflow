@@ -14,11 +14,11 @@ export function UpcomingClasses() {
     <Card>
       <CardHeader className="flex grid-cols-none flex-row items-start justify-between gap-3 border-b border-border">
         <div>
-          <CardTitle>Upcoming classes</CardTitle>
-          <CardDescription>Today</CardDescription>
+          <CardTitle>Próximas clases</CardTitle>
+          <CardDescription>Hoy</CardDescription>
         </div>
         <Button size="sm" variant="soft">
-          Schedule
+          Programar
         </Button>
       </CardHeader>
       <CardContent className="divide-y divide-border px-0 pb-0">
@@ -42,7 +42,7 @@ export function UpcomingClasses() {
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Coach {item.trainer}
+                  Entrenador: {item.trainer}
                 </p>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
                   <div

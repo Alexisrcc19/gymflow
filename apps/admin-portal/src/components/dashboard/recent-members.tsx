@@ -16,10 +16,10 @@ const variants: Record<
   RecentMember['status'],
   'success' | 'warning' | 'danger' | 'info'
 > = {
-  Active: 'success',
-  Expiring: 'warning',
-  Expired: 'danger',
-  Paused: 'info',
+  Activa: 'success',
+  'Por vencer': 'warning',
+  Vencida: 'danger',
+  Pausada: 'info',
 };
 
 function initials(name: string) {
@@ -35,11 +35,11 @@ export function RecentMembers() {
     <Card className="min-w-0 xl:col-span-2">
       <CardHeader className="flex grid-cols-none flex-row items-start justify-between gap-4 border-b border-border">
         <div>
-          <CardTitle>Recent members</CardTitle>
-          <CardDescription>Newest registrations</CardDescription>
+          <CardTitle>Miembros recientes</CardTitle>
+          <CardDescription>Registros más recientes</CardDescription>
         </div>
         <Button size="sm" variant="secondary">
-          View all
+          Ver todos
         </Button>
       </CardHeader>
       <CardContent className="px-0 pb-0">
@@ -69,19 +69,19 @@ export function RecentMembers() {
             <thead>
               <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
                 <th className="px-5 py-3 font-medium" scope="col">
-                  Member
+                  Miembro
                 </th>
                 <th className="px-4 py-3 font-medium" scope="col">
                   Plan
                 </th>
                 <th className="px-4 py-3 font-medium" scope="col">
-                  Joined
+                  Ingreso
                 </th>
                 <th className="px-4 py-3 font-medium" scope="col">
-                  Status
+                  Estado
                 </th>
                 <th className="px-5 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">Acciones</span>
                 </th>
               </tr>
             </thead>
@@ -119,7 +119,7 @@ export function RecentMembers() {
                   </td>
                   <td className="px-5 py-3 text-right">
                     <Button
-                      aria-label={`Actions for ${member.name}`}
+                      aria-label={`Acciones para ${member.name}`}
                       size="icon"
                       variant="ghost"
                     >
