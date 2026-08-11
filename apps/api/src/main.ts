@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
@@ -14,6 +15,7 @@ async function bootstrap() {
   const swaggerEnabled = config.get('SWAGGER_ENABLED', { infer: true });
 
   app.use(helmet());
+  app.use(cookieParser());
   app.enableCors({
     credentials: true,
     origin: parseCorsOrigins(config.get('CORS_ORIGINS', { infer: true })),

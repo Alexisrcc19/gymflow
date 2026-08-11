@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsInt,
   IsString,
+  MinLength,
   Max,
   Min,
   validateSync,
@@ -34,6 +35,25 @@ export class EnvironmentVariables {
 
   @IsString()
   DATABASE_URL!: string;
+
+  @IsString()
+  @MinLength(32)
+  JWT_ACCESS_SECRET!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(60)
+  @Max(3_600)
+  JWT_ACCESS_TTL_SECONDS!: number;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(90)
+  REFRESH_SESSION_TTL_DAYS!: number;
+
+  @IsString()
+  REFRESH_COOKIE_NAME!: string;
 }
 
 const defaults: Record<keyof EnvironmentVariables, unknown> = {
@@ -43,6 +63,10 @@ const defaults: Record<keyof EnvironmentVariables, unknown> = {
   SWAGGER_ENABLED: true,
   DATABASE_URL:
     'postgresql://gymflow:gymflow_dev@localhost:5433/gymflow?schema=public',
+  JWT_ACCESS_SECRET: undefined,
+  JWT_ACCESS_TTL_SECONDS: 900,
+  REFRESH_SESSION_TTL_DAYS: 30,
+  REFRESH_COOKIE_NAME: 'gymflow_refresh',
 };
 
 export function validateEnvironment(
