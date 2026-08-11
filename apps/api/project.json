@@ -52,6 +52,13 @@
         "cwd": "apps/api"
       }
     },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma db seed",
+        "cwd": "apps/api"
+      }
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,

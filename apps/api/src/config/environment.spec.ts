@@ -5,20 +5,29 @@ import {
 } from './environment';
 
 describe('environment configuration', () => {
+  const requiredConfiguration = {
+    JWT_ACCESS_SECRET: 'a-secure-test-secret-with-at-least-32-characters',
+  };
+
   it('applies safe local defaults', () => {
-    expect(validateEnvironment({})).toEqual({
+    expect(validateEnvironment(requiredConfiguration)).toEqual({
       NODE_ENV: NodeEnvironment.Development,
       PORT: 3333,
       CORS_ORIGINS: 'http://localhost:4200',
       SWAGGER_ENABLED: true,
       DATABASE_URL:
         'postgresql://gymflow:gymflow_dev@localhost:5433/gymflow?schema=public',
+      JWT_ACCESS_SECRET: requiredConfiguration.JWT_ACCESS_SECRET,
+      JWT_ACCESS_TTL_SECONDS: 900,
+      REFRESH_SESSION_TTL_DAYS: 30,
+      REFRESH_COOKIE_NAME: 'gymflow_refresh',
     });
   });
 
   it('converts supported environment values', () => {
     expect(
       validateEnvironment({
+        ...requiredConfiguration,
         NODE_ENV: 'test',
         PORT: '4400',
         SWAGGER_ENABLED: 'false',
@@ -31,9 +40,15 @@ describe('environment configuration', () => {
   });
 
   it('rejects an invalid port', () => {
-    expect(() => validateEnvironment({ PORT: '70000' })).toThrow(
-      'Invalid environment configuration',
-    );
+    expect(() =>
+      validateEnvironment({ ...requiredConfiguration, PORT: '70000' }),
+    ).toThrow('Invalid environment configuration');
+  });
+
+  it('requires a sufficiently strong access-token secret', () => {
+    expect(() =>
+      validateEnvironment({ JWT_ACCESS_SECRET: 'too-short' }),
+    ).toThrow('Invalid environment configuration');
   });
 
   it('normalizes a comma-separated origin allowlist', () => {

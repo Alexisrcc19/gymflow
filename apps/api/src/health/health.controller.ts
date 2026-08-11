@@ -7,6 +7,7 @@ import {
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
 
+import { Public } from '../auth/decorators/public.decorator';
 import { DatabaseHealthIndicator } from './database.health-indicator';
 
 @ApiTags('Health')
@@ -19,6 +20,7 @@ export class HealthController {
   ) {}
 
   @Get()
+  @Public()
   @HealthCheck()
   @ApiOperation({ summary: 'Check API process health' })
   check(): Promise<HealthCheckResult> {
