@@ -4,9 +4,16 @@
 dist
 tmp
 out-tsc
+*.tsbuildinfo
 
 # dependencies
 node_modules
+
+# local environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
 
 # IDEs and editors
 /.idea
@@ -58,6 +65,9 @@ Thumbs.db
 /AGENTS.md
 /CLAUDE.md
 /opencode.json
+
+# Prisma Client
+/apps/api/src/generated/prisma/
 
 # Next.js
 .next
