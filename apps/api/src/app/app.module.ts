@@ -7,6 +7,8 @@ import { AuthModule } from '../auth/auth.module';
 import { validateEnvironment } from '../config/environment';
 import { HealthModule } from '../health/health.module';
 import { PrismaModule } from '../infrastructure/database/prisma.module';
+import { MailModule } from '../infrastructure/mail/mail.module';
+import { InvitationsModule } from '../invitations/invitations.module';
 import { MembersModule } from '../members/members.module';
 
 @Module({
@@ -24,7 +26,9 @@ import { MembersModule } from '../members/members.module';
       },
     ]),
     PrismaModule,
+    MailModule,
     AuthModule,
+    InvitationsModule,
     MembersModule,
     HealthModule,
   ],

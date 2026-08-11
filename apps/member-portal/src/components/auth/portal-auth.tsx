@@ -26,15 +26,17 @@ function MemberAuthGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { status } = useAuth();
   const loginRoute = pathname === '/login';
+  const invitationRoute = pathname === '/invitation';
+  const publicRoute = loginRoute || invitationRoute;
 
   useEffect(() => {
-    if (status === 'unauthenticated' && !loginRoute) router.replace('/login');
+    if (status === 'unauthenticated' && !publicRoute) router.replace('/login');
     if (status === 'authenticated' && loginRoute) router.replace('/');
-  }, [loginRoute, router, status]);
+  }, [loginRoute, publicRoute, router, status]);
 
   if (status === 'loading') return <PortalLoading />;
   if (status === 'unauthenticated') {
-    return loginRoute ? children : <PortalLoading />;
+    return publicRoute ? children : <PortalLoading />;
   }
   if (loginRoute) return <PortalLoading />;
   return children;

@@ -2,13 +2,9 @@
 
 import {
   CalendarPlus,
-  Check,
   ChevronLeft,
   ChevronRight,
-  Copy,
-  Eye,
-  EyeOff,
-  RefreshCw,
+  Mail,
   Search,
   UserPlus,
   Users,
@@ -42,6 +38,10 @@ interface Member {
   status: 'ACTIVE' | 'INACTIVE';
   joinedAt: string;
   user: { email: string };
+}
+
+interface CreatedMember extends Member {
+  invitation: { expiresAt?: string; sent: boolean };
 }
 
 interface MembersResponse {
@@ -121,10 +121,12 @@ export default function MembersPage() {
         method: 'POST',
       });
       if (!response.ok) throw new Error(await responseMessage(response));
-      const member = (await response.json()) as Member;
+      const member = (await response.json()) as CreatedMember;
       form.reset();
       setCreatedMessage(
-        `${member.firstName} ${member.lastName} fue registrado con el código ${member.memberCode}.`,
+        member.invitation.sent
+          ? `${member.firstName} ${member.lastName} fue registrado con el código ${member.memberCode}. La invitación fue enviada a su correo.`
+          : `${member.firstName} ${member.lastName} fue registrado, pero la invitación no pudo enviarse. Podrás reenviarla desde su perfil.`,
       );
       setPage(1);
       await loadMembers();
@@ -358,31 +360,6 @@ function CreateMemberCard({
   creating: boolean;
   onSubmit: (event: FormEvent<HTMLFormElement>) => Promise<boolean>;
 }) {
-  const [temporaryPassword, setTemporaryPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  function generatePassword() {
-    setTemporaryPassword(createTemporaryPassword());
-    setShowPassword(true);
-    setCopied(false);
-  }
-
-  async function copyPassword() {
-    if (!temporaryPassword) return;
-    await navigator.clipboard.writeText(temporaryPassword);
-    setCopied(true);
-  }
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    const created = await onSubmit(event);
-    if (created) {
-      setTemporaryPassword('');
-      setShowPassword(false);
-      setCopied(false);
-    }
-  }
-
   return (
     <Card className="h-fit xl:sticky xl:top-22">
       <CardHeader className="border-b border-border">
@@ -397,71 +374,21 @@ function CreateMemberCard({
         </div>
       </CardHeader>
       <CardContent className="pt-5">
-        <form className="space-y-4" onSubmit={(event) => void submit(event)}>
+        <form className="space-y-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
             <FormField label="Nombres" name="firstName" />
             <FormField label="Apellidos" name="lastName" />
           </div>
           <FormField label="Correo electrónico" name="email" type="email" />
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <Label htmlFor="password">Contraseña temporal</Label>
-              <Button
-                className="h-auto px-1 py-0 text-xs"
-                onClick={generatePassword}
-                type="button"
-                variant="ghost"
-              >
-                <RefreshCw aria-hidden="true" size={13} />
-                Generar
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              <Input
-                autoComplete="new-password"
-                id="password"
-                minLength={12}
-                name="password"
-                onChange={(event) => {
-                  setTemporaryPassword(event.target.value);
-                  setCopied(false);
-                }}
-                required
-                type={showPassword ? 'text' : 'password'}
-                value={temporaryPassword}
-              />
-              <Button
-                aria-label={
-                  showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
-                }
-                onClick={() => setShowPassword((visible) => !visible)}
-                size="icon"
-                type="button"
-                variant="secondary"
-              >
-                {showPassword ? (
-                  <EyeOff aria-hidden="true" size={17} />
-                ) : (
-                  <Eye aria-hidden="true" size={17} />
-                )}
-              </Button>
-              <Button
-                aria-label="Copiar contraseña"
-                disabled={!temporaryPassword}
-                onClick={() => void copyPassword()}
-                size="icon"
-                type="button"
-                variant="secondary"
-              >
-                {copied ? (
-                  <Check aria-hidden="true" size={17} />
-                ) : (
-                  <Copy aria-hidden="true" size={17} />
-                )}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Genérala y compártela con el miembro por un canal seguro.
+          <div className="flex gap-3 rounded-md border border-info/25 bg-info/10 p-3 text-sm">
+            <Mail
+              aria-hidden="true"
+              className="mt-0.5 shrink-0 text-info"
+              size={17}
+            />
+            <p className="text-muted-foreground">
+              Enviaremos un enlace de un solo uso para que el miembro cree su
+              propia contraseña.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
@@ -542,37 +469,4 @@ async function responseMessage(response: Response): Promise<string> {
     // La respuesta puede no contener JSON.
   }
   return 'No se pudo completar la solicitud.';
-}
-
-function createTemporaryPassword(): string {
-  const characterGroups = [
-    'ABCDEFGHJKLMNPQRSTUVWXYZ',
-    'abcdefghijkmnopqrstuvwxyz',
-    '23456789',
-    '!@#$%&*?',
-  ];
-  const characters = characterGroups.join('');
-  const password = characterGroups.map((group) => randomCharacter(group));
-
-  while (password.length < 16) password.push(randomCharacter(characters));
-
-  for (let index = password.length - 1; index > 0; index -= 1) {
-    const swapIndex = secureRandomIndex(index + 1);
-    [password[index], password[swapIndex]] = [
-      password[swapIndex],
-      password[index],
-    ];
-  }
-
-  return password.join('');
-}
-
-function randomCharacter(characters: string): string {
-  return characters[secureRandomIndex(characters.length)];
-}
-
-function secureRandomIndex(limit: number): number {
-  const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
-  return values[0] % limit;
 }

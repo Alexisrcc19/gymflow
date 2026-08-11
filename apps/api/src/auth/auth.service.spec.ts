@@ -13,7 +13,7 @@ describe('AuthService', () => {
     id: '4c92d4cb-4c07-4e48-99be-3b144a3cac47',
     gymId: 'e88a318d-6865-42d7-adbf-75a0d24ee665',
     email: 'admin@gymflow.local',
-    passwordHash: 'stored-password-hash',
+    passwordHash: 'stored-password-hash' as string | null,
     role: UserRole.ADMIN,
     status: UserStatus.ACTIVE,
   };
@@ -84,6 +84,14 @@ describe('AuthService', () => {
 
     await expect(
       service.login('missing@gymflow.local', 'invalid-password', {}),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('does not authenticate an invited user before a password is created', async () => {
+    const { service } = createService(true, { ...user, passwordHash: null });
+
+    await expect(
+      service.login('member@gymflow.local', 'any-password', {}),
     ).rejects.toThrow(UnauthorizedException);
   });
 

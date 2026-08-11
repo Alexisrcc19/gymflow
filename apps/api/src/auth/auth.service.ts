@@ -64,10 +64,15 @@ export class AuthService {
       where: { email: email.trim().toLowerCase() },
       select: { ...publicUserSelect, passwordHash: true },
     });
-    const passwordHash = user?.passwordHash ?? (await this.dummyHash);
+    const passwordHash = user?.passwordHash || (await this.dummyHash);
     const passwordMatches = await this.passwords.verify(passwordHash, password);
 
-    if (!user || !passwordMatches || user.status !== UserStatus.ACTIVE) {
+    if (
+      !user ||
+      !user.passwordHash ||
+      !passwordMatches ||
+      user.status !== UserStatus.ACTIVE
+    ) {
       throw new UnauthorizedException(AUTH_MESSAGES.invalidCredentials);
     }
 

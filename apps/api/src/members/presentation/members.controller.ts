@@ -45,6 +45,16 @@ export class MembersController {
     return this.members.list(actor, query);
   }
 
+  @Post(':id/invitation')
+  @RequirePermissions(Permission.MemberCreate)
+  @ApiOperation({ summary: 'Reenviar la invitación de acceso de un miembro' })
+  resendInvitation(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ) {
+    return this.members.resendInvitation(actor, id);
+  }
+
   @Get(':id')
   @RequirePermissions(Permission.MemberRead)
   @ApiOperation({ summary: 'Consultar un miembro' })

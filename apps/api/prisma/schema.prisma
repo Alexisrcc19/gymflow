@@ -119,7 +119,7 @@ model User {
   id                        String                    @id @default(uuid()) @db.Uuid
   gymId                     String                    @db.Uuid
   email                     String                    @unique
-  passwordHash              String
+  passwordHash              String?
   role                      UserRole
   status                    UserStatus                @default(ACTIVE)
   emailVerifiedAt           DateTime?                 @db.Timestamptz(3)
@@ -139,9 +139,27 @@ model User {
   routineVersionsPublished  RoutineVersion[]          @relation("RoutineVersionPublisher")
   routineAssignmentsCreated RoutineAssignment[]       @relation("RoutineAssignmentCreator")
   auditLogs                 AuditLog[]                @relation("AuditActor")
+  invitations               AccountInvitation[]       @relation("InvitationRecipient")
+  invitationsCreated        AccountInvitation[]       @relation("InvitationCreator")
 
   @@index([gymId, role])
   @@index([gymId, status])
+}
+
+model AccountInvitation {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  createdById String    @db.Uuid
+  tokenHash   String    @unique
+  expiresAt   DateTime  @db.Timestamptz(3)
+  acceptedAt  DateTime? @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  user        User      @relation("InvitationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  createdBy   User      @relation("InvitationCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
 }
 
 model RefreshSession {

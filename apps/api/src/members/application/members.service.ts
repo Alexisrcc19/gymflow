@@ -1,14 +1,15 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 
-import { PasswordService } from '../../auth/password.service';
 import type { AuthenticatedUser } from '../../auth/domain/authenticated-user';
 import { Prisma, UserRole, UserStatus } from '../../generated/prisma/client';
 import { AssignmentStatus, ProfileStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
+import { InvitationsService } from '../../invitations/invitations.service';
 import { formatMemberCode } from '../domain/member-code';
 import type { CreateMemberDto } from '../presentation/dto/create-member.dto';
 import type { ListMembersQueryDto } from '../presentation/dto/list-members-query.dto';
@@ -31,16 +32,20 @@ const memberSelect = {
 
 @Injectable()
 export class MembersService {
+  private readonly logger = new Logger(MembersService.name);
+
   constructor(
     private readonly prisma: PrismaService,
-    private readonly passwords: PasswordService,
+    private readonly invitations: InvitationsService,
   ) {}
 
   async create(actor: AuthenticatedUser, input: CreateMemberDto) {
-    const passwordHash = await this.passwords.hash(input.password);
-
+    let created: {
+      member: Prisma.MemberProfileGetPayload<{ select: typeof memberSelect }>;
+      user: { email: string; id: string };
+    };
     try {
-      return await this.prisma.$transaction(async (transaction) => {
+      created = await this.prisma.$transaction(async (transaction) => {
         const sequence = await transaction.gymCodeSequence.upsert({
           where: { gymId: actor.gymId },
           create: {
@@ -55,14 +60,13 @@ export class MembersService {
           data: {
             gymId: actor.gymId,
             email: input.email,
-            passwordHash,
             role: UserRole.MEMBER,
             status: UserStatus.ACTIVE,
           },
-          select: { id: true },
+          select: { id: true, email: true },
         });
 
-        return transaction.memberProfile.create({
+        const member = await transaction.memberProfile.create({
           data: {
             gymId: actor.gymId,
             userId: user.id,
@@ -75,6 +79,7 @@ export class MembersService {
           },
           select: memberSelect,
         });
+        return { member, user };
       });
     } catch (error) {
       if (
@@ -85,6 +90,41 @@ export class MembersService {
       }
       throw error;
     }
+
+    try {
+      const invitation = await this.invitations.issue(actor.id, {
+        userId: created.user.id,
+        email: created.user.email,
+        firstName: created.member.firstName,
+      });
+      return { ...created.member, invitation: { sent: true, ...invitation } };
+    } catch (error) {
+      this.logger.error(
+        `No se pudo enviar la invitación del miembro ${created.member.id}`,
+        error instanceof Error ? error.stack : undefined,
+      );
+      return { ...created.member, invitation: { sent: false } };
+    }
+  }
+
+  async resendInvitation(actor: AuthenticatedUser, id: string) {
+    const member = await this.prisma.memberProfile.findFirst({
+      where: { id, ...this.accessScope(actor) },
+      select: {
+        firstName: true,
+        user: { select: { id: true, email: true, passwordHash: true } },
+      },
+    });
+    if (!member) throw new NotFoundException('Miembro no encontrado');
+    if (member.user.passwordHash) {
+      throw new ConflictException('El miembro ya configuró su contraseña');
+    }
+
+    return this.invitations.issue(actor.id, {
+      userId: member.user.id,
+      email: member.user.email,
+      firstName: member.firstName,
+    });
   }
 
   async list(actor: AuthenticatedUser, query: ListMembersQueryDto) {

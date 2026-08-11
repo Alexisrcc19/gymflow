@@ -54,6 +54,37 @@ export class EnvironmentVariables {
 
   @IsString()
   REFRESH_COOKIE_NAME!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(168)
+  INVITATION_TTL_HOURS!: number;
+
+  @IsString()
+  MEMBER_PORTAL_URL!: string;
+
+  @IsString()
+  SMTP_HOST!: string;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(65_535)
+  SMTP_PORT!: number;
+
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  SMTP_SECURE!: boolean;
+
+  @IsString()
+  SMTP_USER!: string;
+
+  @IsString()
+  SMTP_PASSWORD!: string;
+
+  @IsString()
+  MAIL_FROM!: string;
 }
 
 const defaults: Record<keyof EnvironmentVariables, unknown> = {
@@ -67,6 +98,14 @@ const defaults: Record<keyof EnvironmentVariables, unknown> = {
   JWT_ACCESS_TTL_SECONDS: 900,
   REFRESH_SESSION_TTL_DAYS: 30,
   REFRESH_COOKIE_NAME: 'gymflow_refresh',
+  INVITATION_TTL_HOURS: 48,
+  MEMBER_PORTAL_URL: 'http://localhost:4201',
+  SMTP_HOST: 'localhost',
+  SMTP_PORT: 1025,
+  SMTP_SECURE: false,
+  SMTP_USER: '',
+  SMTP_PASSWORD: '',
+  MAIL_FROM: 'GymFlow <no-reply@gymflow.local>',
 };
 
 export function validateEnvironment(

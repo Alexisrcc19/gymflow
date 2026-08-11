@@ -21,6 +21,14 @@ describe('environment configuration', () => {
       JWT_ACCESS_TTL_SECONDS: 900,
       REFRESH_SESSION_TTL_DAYS: 30,
       REFRESH_COOKIE_NAME: 'gymflow_refresh',
+      INVITATION_TTL_HOURS: 48,
+      MEMBER_PORTAL_URL: 'http://localhost:4201',
+      SMTP_HOST: 'localhost',
+      SMTP_PORT: 1025,
+      SMTP_SECURE: false,
+      SMTP_USER: '',
+      SMTP_PASSWORD: '',
+      MAIL_FROM: 'GymFlow <no-reply@gymflow.local>',
     });
   });
 
