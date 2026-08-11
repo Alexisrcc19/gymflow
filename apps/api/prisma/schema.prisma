@@ -7,3 +7,435 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum GymStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum UserRole {
+  ADMIN
+  TRAINER
+  MEMBER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ProfileStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum MembershipPlanStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum DurationUnit {
+  DAY
+  MONTH
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum AttendanceSource {
+  ADMIN
+  TRAINER
+  SYSTEM
+}
+
+enum RoutineStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum RoutineVersionStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum PrescriptionType {
+  REPETITIONS
+  DURATION
+}
+
+enum WeightUnit {
+  KG
+  LB
+}
+
+enum RoutineAssignmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Gym {
+  id                 String                    @id @default(uuid()) @db.Uuid
+  name               String
+  slug               String                    @unique
+  timezone           String                    @default("America/Guayaquil")
+  currency           String                    @default("USD") @db.VarChar(3)
+  status             GymStatus                 @default(ACTIVE)
+  createdAt          DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime                  @updatedAt @db.Timestamptz(3)
+  codeSequence       GymCodeSequence?
+  users              User[]
+  members            MemberProfile[]
+  trainers           TrainerProfile[]
+  trainerAssignments TrainerMemberAssignment[]
+  membershipPlans    MembershipPlan[]
+  memberships        Membership[]
+  attendances        Attendance[]
+  routines           Routine[]
+  routineAssignments RoutineAssignment[]
+  auditLogs          AuditLog[]
+}
+
+model GymCodeSequence {
+  gymId             String   @id @db.Uuid
+  nextMemberNumber  Int      @default(1)
+  nextTrainerNumber Int      @default(1)
+  updatedAt         DateTime @updatedAt @db.Timestamptz(3)
+  gym               Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                        String                    @id @default(uuid()) @db.Uuid
+  gymId                     String                    @db.Uuid
+  email                     String                    @unique
+  passwordHash              String
+  role                      UserRole
+  status                    UserStatus                @default(ACTIVE)
+  emailVerifiedAt           DateTime?                 @db.Timestamptz(3)
+  lastLoginAt               DateTime?                 @db.Timestamptz(3)
+  createdAt                 DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime                  @updatedAt @db.Timestamptz(3)
+  deactivatedAt             DateTime?                 @db.Timestamptz(3)
+  gym                       Gym                       @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  memberProfile             MemberProfile?
+  trainerProfile            TrainerProfile?
+  refreshSessions           RefreshSession[]
+  trainerAssignmentsCreated TrainerMemberAssignment[] @relation("TrainerAssignmentCreator")
+  membershipsAssigned       Membership[]              @relation("MembershipAssigner")
+  membershipsCancelled      Membership[]              @relation("MembershipCanceller")
+  attendancesRecorded       Attendance[]              @relation("AttendanceRecorder")
+  routinesCreated           Routine[]                 @relation("RoutineCreator")
+  routineVersionsPublished  RoutineVersion[]          @relation("RoutineVersionPublisher")
+  routineAssignmentsCreated RoutineAssignment[]       @relation("RoutineAssignmentCreator")
+  auditLogs                 AuditLog[]                @relation("AuditActor")
+
+  @@index([gymId, role])
+  @@index([gymId, status])
+}
+
+model RefreshSession {
+  id                  String          @id @default(uuid()) @db.Uuid
+  userId              String          @db.Uuid
+  tokenHash           String          @unique
+  expiresAt           DateTime        @db.Timestamptz(3)
+  revokedAt           DateTime?       @db.Timestamptz(3)
+  replacedBySessionId String?         @unique @db.Uuid
+  userAgent           String?
+  ipAddress           String?
+  createdAt           DateTime        @default(now()) @db.Timestamptz(3)
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replacedBy          RefreshSession? @relation("SessionRotation", fields: [replacedBySessionId], references: [id], onDelete: SetNull)
+  replaces            RefreshSession? @relation("SessionRotation")
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model MemberProfile {
+  id                 String                    @id @default(uuid()) @db.Uuid
+  gymId              String                    @db.Uuid
+  userId             String                    @unique @db.Uuid
+  memberCode         String
+  firstName          String
+  lastName           String
+  birthDate          DateTime?                 @db.Date
+  phone              String?
+  status             ProfileStatus             @default(ACTIVE)
+  joinedAt           DateTime                  @db.Date
+  createdAt          DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime                  @updatedAt @db.Timestamptz(3)
+  deactivatedAt      DateTime?                 @db.Timestamptz(3)
+  gym                Gym                       @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  user               User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  trainerAssignments TrainerMemberAssignment[]
+  memberships        Membership[]
+  attendances        Attendance[]
+  routineAssignments RoutineAssignment[]
+
+  @@unique([gymId, memberCode])
+  @@index([gymId, status])
+  @@index([gymId, lastName, firstName])
+}
+
+model TrainerProfile {
+  id                String                    @id @default(uuid()) @db.Uuid
+  gymId             String                    @db.Uuid
+  userId            String                    @unique @db.Uuid
+  trainerCode       String
+  firstName         String
+  lastName          String
+  phone             String?
+  specialty         String?
+  status            ProfileStatus             @default(ACTIVE)
+  createdAt         DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime                  @updatedAt @db.Timestamptz(3)
+  gym               Gym                       @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  user              User                      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  memberAssignments TrainerMemberAssignment[]
+  routinesCreated   Routine[]
+
+  @@unique([gymId, trainerCode])
+  @@index([gymId, status])
+  @@index([gymId, lastName, firstName])
+}
+
+model TrainerMemberAssignment {
+  id           String           @id @default(uuid()) @db.Uuid
+  gymId        String           @db.Uuid
+  trainerId    String           @db.Uuid
+  memberId     String           @db.Uuid
+  status       AssignmentStatus @default(ACTIVE)
+  assignedAt   DateTime         @default(now()) @db.Timestamptz(3)
+  endedAt      DateTime?        @db.Timestamptz(3)
+  assignedById String           @db.Uuid
+  gym          Gym              @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  trainer      TrainerProfile   @relation(fields: [trainerId], references: [id], onDelete: Restrict)
+  member       MemberProfile    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  assignedBy   User             @relation("TrainerAssignmentCreator", fields: [assignedById], references: [id], onDelete: Restrict)
+
+  @@index([trainerId, status])
+  @@index([memberId, status])
+  @@index([gymId, status])
+}
+
+model MembershipPlan {
+  id            String               @id @default(uuid()) @db.Uuid
+  gymId         String               @db.Uuid
+  name          String
+  description   String?
+  durationValue Int
+  durationUnit  DurationUnit
+  price         Decimal              @db.Decimal(10, 2)
+  currency      String               @default("USD") @db.VarChar(3)
+  status        MembershipPlanStatus @default(ACTIVE)
+  createdAt     DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime             @updatedAt @db.Timestamptz(3)
+  gym           Gym                  @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  memberships   Membership[]
+
+  @@index([gymId, status])
+  @@index([gymId, name])
+}
+
+model Membership {
+  id                 String           @id @default(uuid()) @db.Uuid
+  gymId              String           @db.Uuid
+  memberId           String           @db.Uuid
+  planId             String           @db.Uuid
+  planNameSnapshot   String
+  priceSnapshot      Decimal          @db.Decimal(10, 2)
+  currencySnapshot   String           @db.VarChar(3)
+  startsOn           DateTime         @db.Date
+  endsOn             DateTime         @db.Date
+  status             MembershipStatus
+  assignedById       String           @db.Uuid
+  cancelledAt        DateTime?        @db.Timestamptz(3)
+  cancelledById      String?          @db.Uuid
+  cancellationReason String?
+  createdAt          DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime         @updatedAt @db.Timestamptz(3)
+  gym                Gym              @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  member             MemberProfile    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  plan               MembershipPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
+  assignedBy         User             @relation("MembershipAssigner", fields: [assignedById], references: [id], onDelete: Restrict)
+  cancelledBy        User?            @relation("MembershipCanceller", fields: [cancelledById], references: [id], onDelete: SetNull)
+  attendances        Attendance[]
+
+  @@index([memberId, status])
+  @@index([memberId, startsOn, endsOn])
+  @@index([gymId, status])
+  @@index([gymId, endsOn])
+}
+
+model Attendance {
+  id           String           @id @default(uuid()) @db.Uuid
+  gymId        String           @db.Uuid
+  memberId     String           @db.Uuid
+  membershipId String?          @db.Uuid
+  checkedInAt  DateTime         @default(now()) @db.Timestamptz(3)
+  source       AttendanceSource
+  recordedById String           @db.Uuid
+  notes        String?
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+  gym          Gym              @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  member       MemberProfile    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  membership   Membership?      @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  recordedBy   User             @relation("AttendanceRecorder", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([memberId, checkedInAt])
+  @@index([gymId, checkedInAt])
+  @@index([membershipId])
+}
+
+model Exercise {
+  id                String                   @id @default(uuid()) @db.Uuid
+  source            String
+  externalId        String?
+  canonicalName     String
+  bodyPart          String
+  targetMuscle      String
+  muscleGroup       String?
+  secondaryMuscles  String[]
+  equipment         String
+  isActive          Boolean                  @default(true)
+  isCustom          Boolean                  @default(false)
+  sourceAttribution String?
+  sourceHash        String?
+  importedAt        DateTime?                @db.Timestamptz(3)
+  createdAt         DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime                 @updatedAt @db.Timestamptz(3)
+  translations      ExerciseTranslation[]
+  routineExercises  RoutineVersionExercise[]
+
+  @@unique([source, externalId])
+  @@index([isActive])
+  @@index([bodyPart])
+  @@index([targetMuscle])
+  @@index([equipment])
+  @@index([canonicalName])
+}
+
+model ExerciseTranslation {
+  id           String   @id @default(uuid()) @db.Uuid
+  exerciseId   String   @db.Uuid
+  locale       String   @db.VarChar(10)
+  name         String?
+  instructions String
+  steps        String[]
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+  exercise     Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseId, locale])
+}
+
+model Routine {
+  id                 String           @id @default(uuid()) @db.Uuid
+  gymId              String           @db.Uuid
+  name               String
+  description        String?
+  goal               String?
+  status             RoutineStatus    @default(DRAFT)
+  createdByTrainerId String?          @db.Uuid
+  createdByUserId    String           @db.Uuid
+  createdAt          DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime         @updatedAt @db.Timestamptz(3)
+  gym                Gym              @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  createdByTrainer   TrainerProfile?  @relation(fields: [createdByTrainerId], references: [id], onDelete: SetNull)
+  createdByUser      User             @relation("RoutineCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  versions           RoutineVersion[]
+
+  @@index([gymId, status])
+  @@index([createdByTrainerId, status])
+}
+
+model RoutineVersion {
+  id                  String                   @id @default(uuid()) @db.Uuid
+  routineId           String                   @db.Uuid
+  versionNumber       Int
+  nameSnapshot        String
+  descriptionSnapshot String?
+  goalSnapshot        String?
+  status              RoutineVersionStatus     @default(DRAFT)
+  publishedAt         DateTime?                @db.Timestamptz(3)
+  publishedById       String?                  @db.Uuid
+  createdAt           DateTime                 @default(now()) @db.Timestamptz(3)
+  routine             Routine                  @relation(fields: [routineId], references: [id], onDelete: Restrict)
+  publishedBy         User?                    @relation("RoutineVersionPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  exercises           RoutineVersionExercise[]
+  assignments         RoutineAssignment[]
+
+  @@unique([routineId, versionNumber])
+}
+
+model RoutineVersionExercise {
+  id               String           @id @default(uuid()) @db.Uuid
+  routineVersionId String           @db.Uuid
+  exerciseId       String           @db.Uuid
+  dayNumber        Int
+  position         Int
+  sets             Int?
+  prescriptionType PrescriptionType
+  repetitionsMin   Int?
+  repetitionsMax   Int?
+  durationSeconds  Int?
+  targetWeight     Decimal?         @db.Decimal(8, 2)
+  weightUnit       WeightUnit?
+  restSeconds      Int?
+  notes            String?
+  routineVersion   RoutineVersion   @relation(fields: [routineVersionId], references: [id], onDelete: Cascade)
+  exercise         Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  @@unique([routineVersionId, dayNumber, position])
+  @@index([routineVersionId])
+  @@index([exerciseId])
+}
+
+model RoutineAssignment {
+  id               String                  @id @default(uuid()) @db.Uuid
+  gymId            String                  @db.Uuid
+  memberId         String                  @db.Uuid
+  routineVersionId String                  @db.Uuid
+  assignedById     String                  @db.Uuid
+  startsOn         DateTime                @db.Date
+  endsOn           DateTime?               @db.Date
+  status           RoutineAssignmentStatus
+  createdAt        DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime                @updatedAt @db.Timestamptz(3)
+  gym              Gym                     @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  member           MemberProfile           @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  routineVersion   RoutineVersion          @relation(fields: [routineVersionId], references: [id], onDelete: Restrict)
+  assignedBy       User                    @relation("RoutineAssignmentCreator", fields: [assignedById], references: [id], onDelete: Restrict)
+
+  @@index([memberId, status])
+  @@index([gymId, status])
+  @@index([routineVersionId])
+}
+
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  gymId        String   @db.Uuid
+  actorUserId  String?  @db.Uuid
+  action       String
+  resourceType String
+  resourceId   String?  @db.Uuid
+  metadata     Json?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  gym          Gym      @relation(fields: [gymId], references: [id], onDelete: Restrict)
+  actor        User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([gymId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([resourceType, resourceId])
+}
